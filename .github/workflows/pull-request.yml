@@ -10,7 +10,10 @@ jobs:
   pr_lint:
     runs-on: ubuntu-latest
     steps:
-      - name: Check
+      - name: Checkout 🛎️
+        uses: actions/checkout@v3
+    
+      - name: Lint
         run: |
           npm run ci
           npm run lint
