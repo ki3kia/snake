@@ -1,13 +1,8 @@
-import React, {useEffect, useState} from 'react';
+import React from 'react';
 import logo from './logo.svg';
 import './App.css';
 
-function App() {
-    const [a, setA] = useState('');
-    useEffect(()=>{
-        console.log(a);
-    }, [a])
-
+function App():JSX.Element {
 
     return (
         <div className="App">
