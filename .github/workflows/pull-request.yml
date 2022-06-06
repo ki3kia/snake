@@ -1,0 +1,15 @@
+name: lint
+
+on:
+  pull_request:
+    types:
+      - opened
+
+  workflow_dispatch:
+  
+jobs:
+  check_lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: check
+        run: npm run lint
