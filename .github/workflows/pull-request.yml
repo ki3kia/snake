@@ -2,14 +2,15 @@ name: lint
 
 on:
   pull_request:
-    types:
-      - opened
+    types: [opened, edited, reopened]
 
   workflow_dispatch:
   
 jobs:
-  check_lint:
+  pr_lint:
     runs-on: ubuntu-latest
     steps:
-      - name: check
-        run: npm run lint
+      - name: Check
+        run: |
+          npm run ci
+          npm run lint
