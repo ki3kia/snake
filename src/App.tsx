@@ -1,5 +1,5 @@
-import logo from './logo.svg';
 import './App.css';
+import './pokemon.css';
 import { PokemonList } from './PokemonList';
 
 function App() {

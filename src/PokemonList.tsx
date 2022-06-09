@@ -3,11 +3,25 @@ import React, { useEffect, useRef, useState } from 'react';
 type Pokemon = {
   name: string;
   url: string;
+  id?: number;
 };
 
 interface PokemonResponse {
   next: string | null;
   results: Array<Pokemon>;
+}
+
+function isPokemonRes(arg: unknown): arg is PokemonResponse {
+  if (!arg && typeof arg !== 'object') return false;
+  return 'next' in (arg as PokemonResponse) && 'results' in (arg as PokemonResponse);
+}
+
+function isPokemon(arg: unknown): arg is Pokemon {
+  if (!arg && typeof arg !== 'object') return false;
+  if ('name' in (arg as Pokemon) && 'url' in (arg as Pokemon)) {
+    return true;
+  }
+  return false;
 }
 
 export const PokemonList = (): JSX.Element => {
@@ -32,8 +46,16 @@ export const PokemonList = (): JSX.Element => {
 
         observer.unobserve(current as Element);
 
-        const response = await getPokemons(url);
-        setFetchRes((prev) => ({ ...response, results: [...prev.results, ...response.results] }));
+        const responseList = await getPokemons(url);
+
+        setFetchRes((prev) => {
+          return isPokemonRes(responseList)
+            ? {
+                ...responseList,
+                results: [...prev.results, ...responseList.results],
+              }
+            : prev;
+        });
       },
       { threshold: 0.5 }
     );
@@ -46,15 +68,24 @@ export const PokemonList = (): JSX.Element => {
   }, [fetchRes.next]);
 
   return (
-    <section id='pokeList' ref={section}>
-      {fetchRes.results.map((pokemon) => (
-        <div key={pokemon.name}>{pokemon.name}</div>
+    <section id='pokeList' className='pokemonList' ref={section}>
+      {fetchRes.results.map((pokemon, key) => (
+        <div key={pokemon.name}>
+          <img
+            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${
+              key + 1
+            }.svg`}
+          />
+          <div className='pokemonInfo'>{pokemon.name}</div>
+        </div>
       ))}
     </section>
   );
 };
 
-const getPokemons = async (url: string) => {
+const getPokemons = async (url: string): Promise<PokemonResponse | Pokemon | null> => {
   const response = await fetch(url);
-  return (await response.json()) as PokemonResponse;
+  const data: unknown = await response.json();
+
+  return isPokemonRes(data) || isPokemon(data) ? data : null;
 };
