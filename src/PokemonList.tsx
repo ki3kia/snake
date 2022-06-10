@@ -18,18 +18,15 @@ function isPokemonRes(arg: unknown): arg is PokemonResponse {
 
 function isPokemon(arg: unknown): arg is Pokemon {
   if (!arg && typeof arg !== 'object') return false;
-  if ('name' in (arg as Pokemon) && 'url' in (arg as Pokemon)) {
-    return true;
-  }
-  return false;
+  return 'name' in (arg as Pokemon) && 'url' in (arg as Pokemon);
 }
 
 export const PokemonList = (): JSX.Element => {
   const section = useRef<HTMLElement>(null);
-  const limit = 10;
+  const PAGE_SIZE = 10;
 
   const [fetchRes, setFetchRes] = useState<PokemonResponse>({
-    next: `https://pokeapi.co/api/v2/pokemon/?offset=0&limit=${limit}`,
+    next: `https://pokeapi.co/api/v2/pokemon/?offset=0&limit=${PAGE_SIZE}`,
     results: [],
   });
 

@@ -1,21 +1,57 @@
 body {
-    margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', 'Fira Sans',
+    'Droid Sans', 'Helvetica Neue', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace;
 }
 
-.root{
-    display: flex;
-    justify-content: center;
+.pokemonList {
+  padding-top: 5px;
+  font-family: 'Comic Sans MS';
+  width: 50vw;
+  height: 50vh;
+  background-color: beige;
+  display: flex;
+  flex-wrap: wrap;
+  overflow-y: scroll;
+  justify-content: space-around;
+  align-items: end;
 }
-.root div{
-    padding: 10px;
+.pokemonList::-webkit-scrollbar {
+  width: 1vw;
+  background-color: #d8d5db;
+}
+
+.pokemonList::-webkit-scrollbar-thumb {
+  background-color: black;
+}
+
+.pokemonList > div {
+  width: 15%;
+  height: 10%;
+  margin: 0 1rem 2rem;
+  align-content: center;
+}
+
+.pokemonList > div > img {
+  width: 90%;
+  height: 80%;
+  position: relative;
+  margin-bottom: -15%;
+}
+
+.pokemonList > div > .pokemonInfo {
+  text-align: center;
+  background-color: #d8d5db;
+  padding: 15%;
+  border-radius: 8%;
+  font-weight: bold;
+  font-size: 1vw;
+  overflow: hidden;
+  box-shadow: 0px 2px 3px 3px rgba(0, 0, 0, 0.5);
 }
