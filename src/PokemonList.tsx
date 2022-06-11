@@ -18,12 +18,13 @@ function isPokemonRes(arg: unknown): arg is PokemonResponse {
 
 function isPokemon(arg: unknown): arg is Pokemon {
   if (!arg && typeof arg !== 'object') return false;
-  return 'name' in (arg as Pokemon) && 'url' in (arg as Pokemon);
+  return 'name' in (arg as Pokemon);
 }
+
+const PAGE_SIZE = 10;
 
 export const PokemonList = (): JSX.Element => {
   const section = useRef<HTMLElement>(null);
-  const PAGE_SIZE = 10;
 
   const [fetchRes, setFetchRes] = useState<PokemonResponse>({
     next: `https://pokeapi.co/api/v2/pokemon/?offset=0&limit=${PAGE_SIZE}`,
@@ -44,6 +45,14 @@ export const PokemonList = (): JSX.Element => {
         observer.unobserve(current as Element);
 
         const responseList = await getPokemons(url);
+        if (isPokemonRes(responseList) && responseList) {
+          for (let i = 0; i < responseList.results.length; i++) {
+            const responsePokemon = await getPokemons(responseList.results[i].url);
+            responseList.results[i] = isPokemon(responsePokemon)
+              ? responsePokemon
+              : { ...responseList.results[i], id: 0 };
+          }
+        }
 
         setFetchRes((prev) => {
           return isPokemonRes(responseList)
@@ -67,10 +76,10 @@ export const PokemonList = (): JSX.Element => {
   return (
     <section id='pokeList' className='pokemonList' ref={section}>
       {fetchRes.results.map((pokemon, key) => (
-        <div key={pokemon.name}>
+        <div key={pokemon.name} className='pokemon'>
           <img
             src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${
-              key + 1
+              pokemon.id ?? 0
             }.svg`}
           />
           <div className='pokemonInfo'>{pokemon.name}</div>

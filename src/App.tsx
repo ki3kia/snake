@@ -2,7 +2,7 @@ import './App.css';
 import './pokemon.css';
 import { PokemonList } from './PokemonList';
 
-function App() {
+function App(): JSX.Element {
   return (
     <div className='App'>
       <PokemonList />
