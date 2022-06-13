@@ -89,7 +89,6 @@ export const PokemonList = (): JSX.Element => {
   );
 };
 
-const getPokemons = async (url: string): Promise<PokemonResponse | Pokemon | null> => {
 const fetchPokemonAPI = async (url: string): Promise<PokemonResponse | Pokemon | null> => {
   const response = await fetch(url);
   const data: unknown = await response.json();
