@@ -44,21 +44,21 @@ export const PokemonList = (): JSX.Element => {
 
         observer.unobserve(current as Element);
 
-        const responseList = await getPokemons(url);
-        if (isPokemonRes(responseList) && responseList) {
-          for (let i = 0; i < responseList.results.length; i++) {
-            const responsePokemon = await getPokemons(responseList.results[i].url);
-            responseList.results[i] = isPokemon(responsePokemon)
-              ? responsePokemon
-              : { ...responseList.results[i], id: 0 };
-          }
-        }
+        const responseList = await fetchPokemonAPI(url);
+        if (!isPokemonRes(responseList) || !responseList) return;
+
+        const promiseList = responseList.results.map(async (pokemon): Promise<Pokemon> => {
+          const detailedResponse = await fetchPokemonAPI(pokemon.url);
+          return isPokemon(detailedResponse) ? detailedResponse : { ...pokemon, id: 0 };
+        });
+
+        const detailedPokemons = await Promise.all(promiseList);
 
         setFetchRes((prev) => {
           return isPokemonRes(responseList)
             ? {
-                ...responseList,
-                results: [...prev.results, ...responseList.results],
+                next: responseList.next,
+                results: [...prev.results, ...detailedPokemons],
               }
             : prev;
         });
@@ -90,6 +90,7 @@ export const PokemonList = (): JSX.Element => {
 };
 
 const getPokemons = async (url: string): Promise<PokemonResponse | Pokemon | null> => {
+const fetchPokemonAPI = async (url: string): Promise<PokemonResponse | Pokemon | null> => {
   const response = await fetch(url);
   const data: unknown = await response.json();
   return isPokemonRes(data) || isPokemon(data) ? data : null;
