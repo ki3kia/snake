@@ -75,7 +75,7 @@ export const PokemonList = (): JSX.Element => {
 
   return (
     <section id='pokeList' className='pokemonList' ref={section}>
-      {fetchRes.results.map((pokemon, key) => (
+      {fetchRes.results.map((pokemon) => (
         <div key={pokemon.name} className='pokemon'>
           <img
             src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${
@@ -92,6 +92,5 @@ export const PokemonList = (): JSX.Element => {
 const getPokemons = async (url: string): Promise<PokemonResponse | Pokemon | null> => {
   const response = await fetch(url);
   const data: unknown = await response.json();
-
   return isPokemonRes(data) || isPokemon(data) ? data : null;
 };
