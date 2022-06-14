@@ -22,6 +22,7 @@ code {
   justify-content: space-around;
   align-items: end;
 }
+
 .pokemonList::-webkit-scrollbar {
   width: 1vw;
   background-color: #d8d5db;
@@ -53,5 +54,10 @@ code {
   font-weight: bold;
   font-size: 1vw;
   overflow: hidden;
+  cursor: default;
   box-shadow: 0px 2px 3px 3px rgba(0, 0, 0, 0.5);
+}
+
+.pokemon.active .pokemonInfo {
+  box-shadow: 0px 2px 5px 5px rgba(0, 0, 0, 0.7);
 }

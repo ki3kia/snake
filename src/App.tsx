@@ -1,11 +1,15 @@
 import './App.css';
 import './pokemon.css';
-import { PokemonList } from './PokemonList';
+import { Pokemon, PokemonList } from './PokemonList';
+import { useState } from 'react';
 
 function App(): JSX.Element {
+  const [pokemon, setPokemon] = useState<Pokemon['id']>(0);
+
   return (
     <div className='App'>
-      <PokemonList />
+      <PokemonList pokemonId={pokemon} onSelectPokemon={setPokemon} />
+      <button key='next'>Next</button>
     </div>
   );
 }

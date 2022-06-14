@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 
-type Pokemon = {
+export type Pokemon = {
   name: string;
   url: string;
   id?: number;
@@ -9,6 +9,11 @@ type Pokemon = {
 interface PokemonResponse {
   next: string | null;
   results: Array<Pokemon>;
+}
+
+interface ControlParameters {
+  pokemonId: Pokemon['id'];
+  onSelectPokemon: (p: Pokemon['id']) => void;
 }
 
 function isPokemonRes(arg: unknown): arg is PokemonResponse {
@@ -23,7 +28,7 @@ function isPokemon(arg: unknown): arg is Pokemon {
 
 const PAGE_SIZE = 10;
 
-export const PokemonList = (): JSX.Element => {
+export const PokemonList = ({ pokemonId, onSelectPokemon }: ControlParameters): JSX.Element => {
   const section = useRef<HTMLElement>(null);
 
   const [fetchRes, setFetchRes] = useState<PokemonResponse>({
@@ -75,16 +80,22 @@ export const PokemonList = (): JSX.Element => {
 
   return (
     <section id='pokeList' className='pokemonList' ref={section}>
-      {fetchRes.results.map((pokemon) => (
-        <div key={pokemon.name} className='pokemon'>
-          <img
-            src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${
-              pokemon.id ?? 0
-            }.svg`}
-          />
-          <div className='pokemonInfo'>{pokemon.name}</div>
-        </div>
-      ))}
+      {fetchRes.results.map((pokemon) => {
+        return (
+          <div
+            key={pokemon.name}
+            className={`pokemon ${pokemonId === pokemon.id ? 'active' : ''}`}
+            onClick={() => onSelectPokemon(pokemon.id)}
+          >
+            <img
+              src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${
+                pokemon.id ?? 0
+              }.svg`}
+            />
+            <div className='pokemonInfo'>{pokemon.name}</div>
+          </div>
+        );
+      })}
     </section>
   );
 };
