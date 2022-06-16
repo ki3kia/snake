@@ -46,19 +46,26 @@ export const SnakeStates = ({ pokemonId }: { pokemonId: Pokemon['id'] }): JSX.El
 };
 
 const generatePointOutSnakeBody = (snakeBody: Point[]) => {
-  let randomPoint: Point = {
-    x: Math.floor(Math.random() * GRID_SIZE) + 1,
-    y: Math.floor(Math.random() * GRID_SIZE) + 1,
-  };
-  snakeBody.forEach((segment) => {
-    if (segment.x === randomPoint.x && segment.y === randomPoint.y) {
-      randomPoint = generatePointOutSnakeBody(snakeBody);
-    }
-  });
+  let randomPoint: Point;
+  do {
+    randomPoint = {
+      x: Math.floor(Math.random() * GRID_SIZE) + 1,
+      y: Math.floor(Math.random() * GRID_SIZE) + 1,
+    };
+  } while (isSnakeBody(snakeBody, randomPoint));
+
   return randomPoint;
+};
+
+const isSnakeBody = (snake: Point[], point: Point) => {
+  return snake.every((segment) => segment.x === point.x && segment.y === point.y);
 };
 
 const outsideBoard = (point: Point) => {
   if (point.x < 1 || point.x > GRID_SIZE) point.x %= GRID_SIZE;
   if (point.y < 1 || point.y > GRID_SIZE) point.y %= GRID_SIZE;
+};
+
+const isEaten = (snake: Point[], food: Point) => {
+  return snake[0].x === food.x && snake[0].y === food.y;
 };
