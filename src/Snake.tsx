@@ -9,14 +9,13 @@ type Point = {
 const GRID_SIZE = 21;
 
 export const SnakeStates = ({ pokemonId }: { pokemonId: Pokemon['id'] }): JSX.Element => {
-  const boardRef = useRef<HTMLDivElement>(null);
   const [snakeBody, setSnakeBody] = useState<Point[]>([
     { x: 11, y: 4 },
     { x: 11, y: 3 },
   ]);
   const [food, setFood] = useState<Point>(generatePointOutSnakeBody(snakeBody));
 
-  const elementStyles = (element: Point) => {
+  const getElementPositionStyle = (element: Point) => {
     return {
       gridRowStart: element.x,
       gridColumnStart: element.y,
@@ -24,23 +23,23 @@ export const SnakeStates = ({ pokemonId }: { pokemonId: Pokemon['id'] }): JSX.El
   };
 
   return (
-    <div className={'game-board'} ref={boardRef}>
+    <div className={'game-board'}>
       {snakeBody.map((segment, key) => {
         const styleSnake =
           key === 0
             ? {
-                ...elementStyles(segment),
+                ...getElementPositionStyle(segment),
                 backgroundImage: `url(https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${
                   pokemonId ?? 1
                 }.svg)`,
                 backgroundColor: 'inherit',
               }
-            : elementStyles(segment);
+            : getElementPositionStyle(segment);
 
-        return <div key={`snake-body-${key + 1}`} className={'snake-body'} style={styleSnake} />;
+        return <div key={key} className={'snake-body'} style={styleSnake} />;
       })}
 
-      <div key={'food'} className={'food'} style={elementStyles(food)} />
+      <div key={'food'} className={'food'} style={getElementPositionStyle(food)} />
     </div>
   );
 };
@@ -52,18 +51,13 @@ const generatePointOutSnakeBody = (snakeBody: Point[]) => {
       x: Math.floor(Math.random() * GRID_SIZE) + 1,
       y: Math.floor(Math.random() * GRID_SIZE) + 1,
     };
-  } while (isSnakeBody(snakeBody, randomPoint));
+  } while (isPointOutOfSnake(snakeBody, randomPoint));
 
   return randomPoint;
 };
 
-const isSnakeBody = (snake: Point[], point: Point) => {
+const isPointOutOfSnake = (snake: Point[], point: Point) => {
   return snake.every((segment) => segment.x === point.x && segment.y === point.y);
-};
-
-const outsideBoard = (point: Point) => {
-  if (point.x < 1 || point.x > GRID_SIZE) point.x %= GRID_SIZE;
-  if (point.y < 1 || point.y > GRID_SIZE) point.y %= GRID_SIZE;
 };
 
 const isEaten = (snake: Point[], food: Point) => {
