@@ -1,0 +1,52 @@
+.game-board {
+  height: 80vmin;
+  width: 100vmin;
+  display: grid;
+  grid-template-columns: repeat(25, 1fr);
+  grid-template-rows: repeat(21, 1fr);
+  background-color: beige;
+  animation: openGame 3s;
+  border-radius: 15px;
+}
+
+.snake-body {
+  background-color: aquamarine;
+  border-radius: 50%;
+  box-shadow: 0 1px 1px 1px rgba(0, 0, 0, 0.5);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+.snake-body:nth-child(2n) {
+  background-color: cadetblue;
+}
+
+.food {
+  background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pecha-berry.png');
+  background-repeat: no-repeat;
+  background-position: center;
+}
+
+#pokemonChoose {
+  animation: openGame 2s;
+}
+
+@keyframes closeChooseBox {
+  0% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    visibility: hidden;
+  }
+}
+
+@keyframes openGame {
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
+}

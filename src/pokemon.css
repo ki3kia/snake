@@ -1,6 +1,5 @@
 .pokemonList {
   padding-top: 5px;
-  font-family: 'Comic Sans MS';
   width: 50vw;
   height: 50vh;
   background-color: beige;
@@ -8,6 +7,7 @@
   flex-wrap: wrap;
   overflow-y: scroll;
   justify-content: space-around;
+  border-radius: 5px;
 }
 
 .pokemonList::-webkit-scrollbar {
@@ -47,4 +47,21 @@
 
 .pokemon.active .pokemonInfo {
   box-shadow: 0 2px 5px 5px rgba(0, 0, 0, 0.7);
+}
+
+button {
+  margin-top: 1%;
+  font-family: 'Comic Sans MS';
+  font-size: 2vw;
+  padding: 2px 5px;
+  border-radius: 5px;
+  border: 1px solid #d8d5db;
+  box-shadow: 0 2px 3px 3px rgba(0, 0, 0, 0.3);
+}
+button:hover {
+  box-shadow: 0 1px 1px 1px rgba(0, 0, 0, 0.3);
+}
+
+button:active {
+  box-shadow: none;
 }
