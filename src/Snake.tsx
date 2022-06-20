@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Pokemon } from './PokemonList';
 
 type Point = {
@@ -13,7 +13,7 @@ const GRID_ROWS_SIZE = 21;
 const GRID_COLUMNS_SIZE = 25;
 
 export const SnakeStates = ({ pokemonId }: Props): JSX.Element => {
-  const [speed, setSpeed] = useState(200);
+  const [speed, setSpeed] = useState(6);
   const [snakeBody, setSnakeBody] = useState<Point[]>([
     { x: 4, y: 11 },
     { x: 3, y: 11 },
@@ -62,7 +62,7 @@ export const SnakeStates = ({ pokemonId }: Props): JSX.Element => {
         prev.length > 1 ? prev.pop() : null;
         return [newHeadPos, ...prev];
       });
-    }, speed);
+    }, 1000 / speed);
     return () => clearInterval(intervalId);
   }, [direction, speed]);
 
@@ -101,7 +101,6 @@ const generatePointOutSnakeBody = (snakeBody: Point[]) => {
 };
 
 const isPointOutOfSnake = (snake: Point[], point: Point) => {
-  return snake.every((segment) => segment.x === point.x && segment.y === point.y);
   return snake.some((segment) => segment.x === point.x && segment.y === point.y);
 };
 
@@ -109,10 +108,9 @@ const isEaten = (snake: Point[], food: Point) => {
   return snake[0].x === food.x && snake[0].y === food.y;
 };
 
-const outOfGameBoard = (point: Point): Point => {
-  if (point.x > GRID_COLUMNS_SIZE) point.x %= GRID_COLUMNS_SIZE;
-  if (point.x < 1) point.x += GRID_COLUMNS_SIZE;
-  if (point.y > GRID_ROWS_SIZE) point.y %= GRID_ROWS_SIZE;
-  if (point.y < 1) point.y += GRID_ROWS_SIZE;
-  return point;
+const outOfGameBoard = ({ x, y }: Point): Point => {
+  return {
+    x: x % GRID_COLUMNS_SIZE > 1 ? x % GRID_COLUMNS_SIZE : x + GRID_COLUMNS_SIZE,
+    y: y % GRID_ROWS_SIZE > 1 ? x % GRID_ROWS_SIZE : y + GRID_ROWS_SIZE,
+  };
 };
