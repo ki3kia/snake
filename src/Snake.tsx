@@ -102,6 +102,7 @@ const generatePointOutSnakeBody = (snakeBody: Point[]) => {
 
 const isPointOutOfSnake = (snake: Point[], point: Point) => {
   return snake.every((segment) => segment.x === point.x && segment.y === point.y);
+  return snake.some((segment) => segment.x === point.x && segment.y === point.y);
 };
 
 const isEaten = (snake: Point[], food: Point) => {
