@@ -13,7 +13,7 @@ const GRID_ROWS_SIZE = 21;
 const GRID_COLUMNS_SIZE = 25;
 
 export const SnakeStates = ({ pokemonId }: Props): JSX.Element => {
-  const [speed, setSpeed] = useState(6);
+  const [stepTimeInterval, setStepTimeInterval] = useState(6);
   const [snakeBody, setSnakeBody] = useState<Point[]>([
     { x: 4, y: 11 },
     { x: 3, y: 11 },
@@ -59,14 +59,10 @@ export const SnakeStates = ({ pokemonId }: Props): JSX.Element => {
 
   useEffect(() => {
     const intervalId = setInterval(() => {
-      setSnakeBody((prev) => {
-        const newHeadPos = getPointOutOfGameBoard({ x: prev[0].x + direction.x, y: prev[0].y + direction.y });
-        if (prev.length > 1) prev.pop();
-        return [newHeadPos, ...prev];
-      });
-    }, 1000 / speed);
+      setSnakeBody((prev) => moveSnake(prev, direction));
+    }, stepTimeInterval);
     return () => clearInterval(intervalId);
-  }, [direction, speed]);
+  }, [direction, stepTimeInterval]);
 
   return (
     <div className={'game-board'}>
@@ -115,4 +111,10 @@ const getPointOutOfGameBoard = ({ x, y }: Point): Point => {
     x: x ? Math.abs(x % (GRID_COLUMNS_SIZE + 1)) : GRID_COLUMNS_SIZE,
     y: y ? Math.abs(y % (GRID_ROWS_SIZE + 1)) : GRID_ROWS_SIZE,
   };
+};
+
+const moveSnake = (snake: Point[], direction: Point, isEat = false) => {
+  const newHeadPos = getPointOutOfGameBoard({ x: snake[0].x + direction.x, y: snake[0].y + direction.y });
+  if (snake.length > 1 && !isEat) snake.pop();
+  return [newHeadPos, ...snake];
 };
