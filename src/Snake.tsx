@@ -32,34 +32,36 @@ export const SnakeStates = ({ pokemonId }: Props): JSX.Element => {
       switch (ev.code) {
         case 'ArrowUp':
           setDirection((prev) => {
-            return prev.y === 1 ? prev : { x: 0, y: -1 };
+            return prev.y !== 0 ? prev : { x: 0, y: -1 };
           });
           break;
         case 'ArrowDown':
           setDirection((prev) => {
-            return prev.y === -1 ? prev : { x: 0, y: 1 };
+            return prev.y !== 0 ? prev : { x: 0, y: 1 };
           });
           break;
         case 'ArrowRight':
           setDirection((prev) => {
-            return prev.x === -1 ? prev : { x: 1, y: 0 };
+            return prev.x !== 0 ? prev : { x: 1, y: 0 };
           });
           break;
         case 'ArrowLeft':
           setDirection((prev) => {
-            return prev.x === 1 ? prev : { x: -1, y: 0 };
+            return prev.x !== 0 ? prev : { x: -1, y: 0 };
           });
           break;
       }
     };
     window.addEventListener('keydown', keyPressHandler);
+
+    return () => window.removeEventListener('keydown', keyPressHandler);
   }, []);
 
   useEffect(() => {
     const intervalId = setInterval(() => {
       setSnakeBody((prev) => {
-        const newHeadPos: Point = outOfGameBoard({ x: prev[0].x + direction.x, y: prev[0].y + direction.y });
-        prev.length > 1 ? prev.pop() : null;
+        const newHeadPos = getPointOutOfGameBoard({ x: prev[0].x + direction.x, y: prev[0].y + direction.y });
+        if (prev.length > 1) prev.pop();
         return [newHeadPos, ...prev];
       });
     }, 1000 / speed);
@@ -108,7 +110,7 @@ const isEaten = (snake: Point[], food: Point) => {
   return snake[0].x === food.x && snake[0].y === food.y;
 };
 
-const outOfGameBoard = ({ x, y }: Point): Point => {
+const getPointOutOfGameBoard = ({ x, y }: Point): Point => {
   return {
     x: x ? Math.abs(x % (GRID_COLUMNS_SIZE + 1)) : GRID_COLUMNS_SIZE,
     y: y ? Math.abs(y % (GRID_ROWS_SIZE + 1)) : GRID_ROWS_SIZE,
