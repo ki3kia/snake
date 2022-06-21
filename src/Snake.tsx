@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Pokemon } from './PokemonList';
 
 type Point = {
@@ -110,7 +110,7 @@ const isEaten = (snake: Point[], food: Point) => {
 
 const outOfGameBoard = ({ x, y }: Point): Point => {
   return {
-    x: x % GRID_COLUMNS_SIZE > 1 ? x % GRID_COLUMNS_SIZE : x + GRID_COLUMNS_SIZE,
-    y: y % GRID_ROWS_SIZE > 1 ? x % GRID_ROWS_SIZE : y + GRID_ROWS_SIZE,
+    x: x ? Math.abs(x % (GRID_COLUMNS_SIZE + 1)) : GRID_COLUMNS_SIZE,
+    y: y ? Math.abs(y % (GRID_ROWS_SIZE + 1)) : GRID_ROWS_SIZE,
   };
 };
