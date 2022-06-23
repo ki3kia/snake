@@ -37,11 +37,10 @@ type moveSnakeResp = {
   snake: Point[];
   isEaten: boolean;
 };
-export const moveSnake = (snake: Point[], direction: Point, food: Point | undefined): moveSnakeResp => {
+export const moveSnake = (snake: Point[], direction: Point, food: Point): moveSnakeResp => {
   const newBody = [getPointOutOfGameBoard({ x: snake[0].x + direction.x, y: snake[0].y + direction.y }), ...snake];
-
-  const isEaten = typeof food !== 'undefined' && isFoodEaten(newBody, food);
-
+  const isEaten = isFoodEaten(newBody, food);
   if (!isEaten) newBody.pop();
+
   return { snake: newBody, isEaten };
 };

@@ -6,13 +6,17 @@ type Props = {
   pokemonId: Pokemon['id'];
 };
 
+const INITIAL_SNAKE_BODY = [
+  { x: 4, y: 11 },
+  { x: 3, y: 11 },
+];
+
 export const SnakeStates = ({ pokemonId }: Props): JSX.Element => {
-  const [stepTimeInterval, setStepTimeInterval] = useState(200);
-  const [snakeBody, setSnakeBody] = useState<Point[]>([
-    { x: 4, y: 11 },
-    { x: 3, y: 11 },
-  ]);
-  const [food, setFood] = useState<Point>();
+  const [gameState, setGameState] = useState({
+    snakeBody: INITIAL_SNAKE_BODY,
+    food: generatePointOutSnakeBody(INITIAL_SNAKE_BODY),
+    stepTimeInterval: 200,
+  });
   const directionRef = useRef<Point>({ x: 1, y: 0 });
 
   const getElementPositionStyle = (element: Point) => {
@@ -44,31 +48,20 @@ export const SnakeStates = ({ pokemonId }: Props): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    let isEat = false;
     const intervalId = setInterval(() => {
-      setSnakeBody((prev) => {
-        const moveSnakeResp = moveSnake(prev, directionRef.current, food);
-        isEat = moveSnakeResp.isEaten;
-        return moveSnakeResp.snake;
+      setGameState((prev) => {
+        const moveSnakeResp = moveSnake(prev.snakeBody, directionRef.current, prev.food);
+        const food = moveSnakeResp.isEaten ? generatePointOutSnakeBody(moveSnakeResp.snake) : prev.food;
+        const stepTimeInterval = moveSnakeResp.isEaten ? prev.stepTimeInterval - 1 : prev.stepTimeInterval;
+        return { snakeBody: moveSnakeResp.snake, food, stepTimeInterval };
       });
-      if (isEat) {
-        setFood(undefined);
-        setStepTimeInterval((prev) => prev - 1);
-      }
-    }, stepTimeInterval);
+    }, gameState.stepTimeInterval);
     return () => clearInterval(intervalId);
-  }, [stepTimeInterval, food]);
-
-  useEffect(() => {
-    if (!food) {
-      setFood(generatePointOutSnakeBody(snakeBody));
-      setStepTimeInterval((prev) => prev - 1);
-    }
-  }, [snakeBody, food]);
+  }, [gameState.stepTimeInterval]);
 
   return (
     <div className={'game-board'}>
-      {snakeBody.map((segment, key) => {
+      {gameState.snakeBody.map((segment, key) => {
         const styleSnake =
           key === 0
             ? {
@@ -83,7 +76,7 @@ export const SnakeStates = ({ pokemonId }: Props): JSX.Element => {
         return <div key={key} className={'snake-body'} style={styleSnake} />;
       })}
 
-      {food ? <div key={'food'} className={'food'} style={getElementPositionStyle(food)} /> : null}
+      {gameState.food ? <div key={'food'} className={'food'} style={getElementPositionStyle(gameState.food)} /> : null}
     </div>
   );
 };
