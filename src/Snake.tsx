@@ -44,14 +44,14 @@ export const SnakeStates = ({ pokemonId }: Props): JSX.Element => {
   }, []);
 
   useEffect(() => {
-    let isEaten = false;
+    let isEat = false;
     const intervalId = setInterval(() => {
       setSnakeBody((prev) => {
-        const moveResult = moveSnake(prev, directionRef.current, food);
-        isEaten = moveResult.isAte;
-        return moveResult.snake;
+        const moveSnakeResp = moveSnake(prev, directionRef.current, food);
+        isEat = moveSnakeResp.isEaten;
+        return moveSnakeResp.snake;
       });
-      if (isEaten) {
+      if (isEat) {
         setFood(undefined);
         setStepTimeInterval((prev) => prev - 1);
       }

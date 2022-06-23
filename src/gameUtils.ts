@@ -13,16 +13,16 @@ export const generatePointOutSnakeBody = (snakeBody: Point[]): Point => {
       x: Math.floor(Math.random() * GRID_COLUMNS_SIZE) + 1,
       y: Math.floor(Math.random() * GRID_ROWS_SIZE) + 1,
     };
-  } while (isPointOutOfSnake(snakeBody, randomPoint));
+  } while (isPointOnSnake(snakeBody, randomPoint));
 
   return randomPoint;
 };
 
-export const isPointOutOfSnake = (snake: Point[], point: Point): boolean => {
+export const isPointOnSnake = (snake: Point[], point: Point): boolean => {
   return snake.some((segment) => segment.x === point.x && segment.y === point.y);
 };
 
-const isEaten = (snake: Point[], food: Point): boolean => {
+const isFoodEaten = (snake: Point[], food: Point): boolean => {
   return snake[0].x === food.x && snake[0].y === food.y;
 };
 
@@ -35,13 +35,13 @@ const getPointOutOfGameBoard = ({ x, y }: Point): Point => {
 
 type moveSnakeResp = {
   snake: Point[];
-  isAte: boolean;
+  isEaten: boolean;
 };
 export const moveSnake = (snake: Point[], direction: Point, food: Point | undefined): moveSnakeResp => {
   const newBody = [getPointOutOfGameBoard({ x: snake[0].x + direction.x, y: snake[0].y + direction.y }), ...snake];
-  let isEat = false;
-  if (!food || !isEaten(newBody, food)) {
-    newBody.pop();
-  } else isEat = true;
-  return { snake: newBody, isAte: isEat };
+
+  const isEaten = typeof food !== 'undefined' && isFoodEaten(newBody, food);
+
+  if (!isEaten) newBody.pop();
+  return { snake: newBody, isEaten };
 };
