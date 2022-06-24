@@ -1,9 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import { Pokemon } from './PokemonList';
-import { Point, generatePointOutSnakeBody, moveSnake } from './gameUtils';
+import { Point, generatePointOutSnakeBody, moveSnake, isDied, isWin } from './gameUtils';
 
 type Props = {
   pokemonId: Pokemon['id'];
+  isPaused: boolean;
+  setIsOnGame: (newState: boolean) => void;
+};
+type Food = {
+  good: Point;
+  bad: Point;
+};
+type GameState = {
+  snakeBody: Point[];
+  food: Food;
+  stepTimeInterval: number;
 };
 
 const INITIAL_SNAKE_BODY = [
@@ -11,13 +22,21 @@ const INITIAL_SNAKE_BODY = [
   { x: 3, y: 11 },
 ];
 
-export const SnakeStates = ({ pokemonId }: Props): JSX.Element => {
-  const [gameState, setGameState] = useState({
+const INITIAL_STEP_TIME_INTERVAL = 200;
+const INITIAL_DIRECTION: Point = { x: 1, y: 0 };
+const INITIAL_FOOD = {
+  good: { x: 20, y: 9 },
+  bad: { x: 20, y: 13 },
+};
+
+export const SnakeStates = ({ pokemonId, isPaused, setIsOnGame }: Props): JSX.Element => {
+  const [gameState, setGameState] = useState<GameState>({
     snakeBody: INITIAL_SNAKE_BODY,
-    food: generatePointOutSnakeBody(INITIAL_SNAKE_BODY),
-    stepTimeInterval: 200,
+    food: INITIAL_FOOD,
+    stepTimeInterval: INITIAL_STEP_TIME_INTERVAL,
   });
-  const directionRef = useRef<Point>({ x: 1, y: 0 });
+
+  const directionRef = useRef<Point>(INITIAL_DIRECTION);
 
   const getElementPositionStyle = (element: Point) => {
     return {
@@ -27,6 +46,7 @@ export const SnakeStates = ({ pokemonId }: Props): JSX.Element => {
   };
 
   useEffect(() => {
+    if (isPaused) return;
     const keyPressHandler = (ev: KeyboardEvent) => {
       switch (ev.code) {
         case 'ArrowUp':
@@ -45,19 +65,35 @@ export const SnakeStates = ({ pokemonId }: Props): JSX.Element => {
     };
     window.addEventListener('keydown', keyPressHandler);
     return () => window.removeEventListener('keydown', keyPressHandler);
-  }, []);
+  }, [isPaused]);
 
   useEffect(() => {
+    if (isPaused) return;
     const intervalId = setInterval(() => {
       setGameState((prev) => {
-        const moveSnakeResp = moveSnake(prev.snakeBody, directionRef.current, prev.food);
-        const food = moveSnakeResp.isEaten ? generatePointOutSnakeBody(moveSnakeResp.snake) : prev.food;
+        const moveSnakeResp = moveSnake(prev.snakeBody, directionRef.current, prev.food.good);
+        const food: Food = { good: { x: 0, y: 0 }, bad: { x: 0, y: 0 } };
+        food.good =
+          moveSnakeResp.isEaten && !isWin(moveSnakeResp.snake)
+            ? generatePointOutSnakeBody(moveSnakeResp.snake)
+            : prev.food.good;
+        food.bad =
+          moveSnakeResp.isEaten && !isWin(moveSnakeResp.snake)
+            ? generatePointOutSnakeBody(moveSnakeResp.snake, food.good)
+            : prev.food.bad;
         const stepTimeInterval = moveSnakeResp.isEaten ? prev.stepTimeInterval - 1 : prev.stepTimeInterval;
         return { snakeBody: moveSnakeResp.snake, food, stepTimeInterval };
       });
     }, gameState.stepTimeInterval);
     return () => clearInterval(intervalId);
-  }, [gameState.stepTimeInterval]);
+  }, [isPaused, gameState.stepTimeInterval]);
+
+  useEffect(() => {
+    if (isDied(gameState.snakeBody, gameState.food.bad)) {
+      setIsOnGame(false);
+      directionRef.current = INITIAL_DIRECTION;
+    }
+  }, [gameState.snakeBody, gameState.food, setIsOnGame]);
 
   return (
     <div className={'game-board'}>
@@ -76,7 +112,8 @@ export const SnakeStates = ({ pokemonId }: Props): JSX.Element => {
         return <div key={key} className={'snake-body'} style={styleSnake} />;
       })}
 
-      {gameState.food ? <div key={'food'} className={'food'} style={getElementPositionStyle(gameState.food)} /> : null}
+      <div key={'food'} className={'food good'} style={getElementPositionStyle(gameState.food.good)} />
+      <div key={'food'} className={'food bad'} style={getElementPositionStyle(gameState.food.bad)} />
     </div>
   );
 };

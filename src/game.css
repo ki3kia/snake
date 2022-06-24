@@ -5,7 +5,7 @@
   grid-template-columns: repeat(25, 1fr);
   grid-template-rows: repeat(21, 1fr);
   background-color: beige;
-  animation: openGame 3s;
+  animation: openGame 2s;
   border-radius: 15px;
 }
 
@@ -18,29 +18,69 @@
   background-position: center;
 }
 
-.snake-body:nth-child(1) {
-  z-index: 1;
+.snake-body:first-child {
+  z-index: 2;
 }
 
 .food {
-  top: -1px;
-  background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pecha-berry.png');
+  z-index: 1;
   background-repeat: no-repeat;
   background-position: center;
 }
 
-#pokemonChoose {
+.food.good {
+  background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/pecha-berry.png');
+}
+
+.food.bad {
+  background-image: url('https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/items/wiki-berry.png');
+}
+
+button.next {
+  font-size: 3vw;
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06);
+}
+
+div.pause {
+  width: 100vmin;
+  height: 80vmin;
+  position: absolute;
+  display: grid;
+  align-content: center;
+  justify-content: center;
+  z-index: 3;
+  border-radius: 15px;
+  background-color: rgba(20, 10, 5, 0.3);
   animation: openGame 2s;
 }
 
-@keyframes closeChooseBox {
-  0% {
-    opacity: 1;
-  }
-  100% {
-    opacity: 0;
-    visibility: hidden;
-  }
+button.play {
+  width: fit-content;
+  text-align: center;
+  font-size: 5vw;
+  background-color: transparent;
+}
+button {
+  background-color: transparent;
+  box-shadow: none;
+  border: none;
+}
+button:hover {
+  border: none;
+  box-shadow: none;
+}
+
+div.play {
+  position: absolute;
+}
+
+button.pause {
+  font-size: 3vw;
+  margin-left: 5px;
+}
+
+#pokemonChoose {
+  animation: openGame 2s;
 }
 
 @keyframes openGame {
