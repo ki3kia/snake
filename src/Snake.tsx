@@ -112,8 +112,8 @@ export const SnakeStates = ({ pokemonId, isPaused, setIsOnGame }: Props): JSX.El
         return <div key={key} className={'snake-body'} style={styleSnake} />;
       })}
 
-      <div key={'food'} className={'food good'} style={getElementPositionStyle(gameState.food.good)} />
-      <div key={'food'} className={'food bad'} style={getElementPositionStyle(gameState.food.bad)} />
+      <div key={'good_food'} className={'food good'} style={getElementPositionStyle(gameState.food.good)} />
+      <div key={'bad_food'} className={'food bad'} style={getElementPositionStyle(gameState.food.bad)} />
     </div>
   );
 };
