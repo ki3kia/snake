@@ -15,14 +15,14 @@ export const isWin = (snake: Point[]): boolean => {
 };
 
 export const generatePointOutSnakeBody = (snakeBody: Point[], point?: Point): Point => {
-  let randomPoint: Point, isUniquePoint: boolean;
+  let randomPoint: Point, isNotUniquePoint: boolean;
   do {
     randomPoint = {
       x: Math.floor(Math.random() * GRID_COLUMNS_SIZE) + 1,
       y: Math.floor(Math.random() * GRID_ROWS_SIZE) + 1,
     };
-    isUniquePoint = point ? randomPoint.x !== point.x && randomPoint.y !== point.y : false;
-  } while (isPointOnSnake(snakeBody, randomPoint) && !isUniquePoint);
+    isNotUniquePoint = point ? randomPoint.x === point.x && randomPoint.y === point.y : false;
+  } while (isPointOnSnake(snakeBody, randomPoint) && isNotUniquePoint);
 
   return randomPoint;
 };
