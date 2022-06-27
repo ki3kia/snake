@@ -5,7 +5,7 @@ import { Point, generatePointOutSnakeBody, moveSnake, isDied, isWin } from './ga
 type Props = {
   pokemonId: Pokemon['id'];
   isPaused: boolean;
-  onEndGame: (newState: boolean) => void;
+  onEndGame: () => void;
 };
 type Food = {
   good: Point;
@@ -90,7 +90,7 @@ export const SnakeStates = ({ pokemonId, isPaused, onEndGame }: Props): JSX.Elem
 
   useEffect(() => {
     if (isDied(gameState.snakeBody, gameState.food.bad)) {
-      onEndGame(false);
+      onEndGame();
       directionRef.current = INITIAL_DIRECTION;
     }
   }, [gameState.snakeBody, gameState.food, onEndGame]);
