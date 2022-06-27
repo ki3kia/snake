@@ -72,16 +72,16 @@ export const SnakeStates = ({ pokemonId, isPaused, onEndGame }: Props): JSX.Elem
     const intervalId = setInterval(() => {
       setGameState((prev) => {
         const moveSnakeResp = moveSnake(prev.snakeBody, directionRef.current, prev.food.good);
-        const food: Food = { good: { x: 0, y: 0 }, bad: { x: 0, y: 0 } };
-        food.good =
+        const good =
           moveSnakeResp.isEaten && !isWin(moveSnakeResp.snake)
             ? generatePointOutSnakeBody(moveSnakeResp.snake)
             : prev.food.good;
-        food.bad =
+        const bad =
           moveSnakeResp.isEaten && !isWin(moveSnakeResp.snake)
-            ? generatePointOutSnakeBody(moveSnakeResp.snake, food.good)
+            ? generatePointOutSnakeBody(moveSnakeResp.snake, good)
             : prev.food.bad;
         const stepTimeInterval = moveSnakeResp.isEaten ? prev.stepTimeInterval - 1 : prev.stepTimeInterval;
+        const food: Food = { good, bad };
         return { snakeBody: moveSnakeResp.snake, food, stepTimeInterval };
       });
     }, gameState.stepTimeInterval);
