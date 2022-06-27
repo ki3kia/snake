@@ -5,7 +5,7 @@ import { Point, generatePointOutSnakeBody, moveSnake, isDied, isWin } from './ga
 type Props = {
   pokemonId: Pokemon['id'];
   isPaused: boolean;
-  setIsOnGame: (newState: boolean) => void;
+  onEndGame: (newState: boolean) => void;
 };
 type Food = {
   good: Point;
@@ -29,7 +29,7 @@ const INITIAL_FOOD = {
   bad: { x: 20, y: 13 },
 };
 
-export const SnakeStates = ({ pokemonId, isPaused, setIsOnGame }: Props): JSX.Element => {
+export const SnakeStates = ({ pokemonId, isPaused, onEndGame }: Props): JSX.Element => {
   const [gameState, setGameState] = useState<GameState>({
     snakeBody: INITIAL_SNAKE_BODY,
     food: INITIAL_FOOD,
@@ -90,10 +90,10 @@ export const SnakeStates = ({ pokemonId, isPaused, setIsOnGame }: Props): JSX.El
 
   useEffect(() => {
     if (isDied(gameState.snakeBody, gameState.food.bad)) {
-      setIsOnGame(false);
+      onEndGame(false);
       directionRef.current = INITIAL_DIRECTION;
     }
-  }, [gameState.snakeBody, gameState.food, setIsOnGame]);
+  }, [gameState.snakeBody, gameState.food, onEndGame]);
 
   return (
     <div className={'game-board'}>

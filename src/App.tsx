@@ -34,7 +34,13 @@ function App(): JSX.Element {
             </button>
           </div>
         )}
-        <SnakeStates pokemonId={pokemon} isPaused={isPaused} setIsOnGame={setIsOnGame} />
+        <SnakeStates
+          pokemonId={pokemon}
+          isPaused={isPaused}
+          onEndGame={() => {
+            setIsOnGame(false);
+          }}
+        />
       </div>
     );
   }
