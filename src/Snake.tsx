@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { Pokemon } from './PokemonList';
 import { Point, generatePointOutSnakeBody, moveSnake, isDied, isWin } from './gameUtils';
+import { CameraControl } from './Camera';
 
 type Props = {
   pokemonId: Pokemon['id'];
@@ -95,25 +96,37 @@ export const SnakeStates = ({ pokemonId, isPaused, onEndGame }: Props): JSX.Elem
     }
   }, [gameState.snakeBody, gameState.food, onEndGame]);
 
+  const [isUseCamera, setIsUseCamera] = useState(false);
+
   return (
-    <div className={'game-board'}>
-      {gameState.snakeBody.map((segment, key) => {
-        const styleSnake =
-          key === 0
-            ? {
-                ...getElementPositionStyle(segment),
-                backgroundImage: `url(https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${
-                  pokemonId ?? 1
-                }.svg)`,
-                backgroundColor: 'inherit',
-              }
-            : getElementPositionStyle(segment);
+    <>
+      <div className={'game-board'}>
+        {gameState.snakeBody.map((segment, key) => {
+          const styleSnake =
+            key === 0
+              ? {
+                  ...getElementPositionStyle(segment),
+                  backgroundImage: `url(https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${
+                    pokemonId ?? 1
+                  }.svg)`,
+                  backgroundColor: 'inherit',
+                }
+              : getElementPositionStyle(segment);
 
-        return <div key={key} className={'snake-body'} style={styleSnake} />;
-      })}
+          return <div key={key} className={'snake-body'} style={styleSnake} />;
+        })}
 
-      <div key={'good_food'} className={'food good'} style={getElementPositionStyle(gameState.food.good)} />
-      <div key={'bad_food'} className={'food bad'} style={getElementPositionStyle(gameState.food.bad)} />
-    </div>
+        <div key={'good_food'} className={'food good'} style={getElementPositionStyle(gameState.food.good)} />
+        <div key={'bad_food'} className={'food bad'} style={getElementPositionStyle(gameState.food.bad)} />
+      </div>
+      {isUseCamera ? <CameraControl /> : null}
+      <input
+        type={'checkbox'}
+        key={'isCameraControl'}
+        id={'isCameraControl'}
+        onChange={() => setIsUseCamera((prev) => !prev)}
+      />
+      <label htmlFor={'isCameraControl'}>Use camera for control</label>
+    </>
   );
 };

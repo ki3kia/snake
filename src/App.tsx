@@ -6,16 +6,13 @@ import '@tensorflow/tfjs-backend-webgl';
 import '@mediapipe/hands';
 
 import { Pokemon, PokemonList } from './PokemonList';
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import { SnakeStates } from './Snake';
-import { CameraControl } from './Camera';
 
 function App(): JSX.Element {
   const [pokemon, setPokemon] = useState<Pokemon['id']>(1);
   const [isOnGame, setIsOnGame] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
-  const checkRef = useRef<HTMLInputElement>(null);
-  const [isUseCamera, setIsUseCamera] = useState(false);
 
   const nextClick = () => {
     setIsOnGame(true);
@@ -48,15 +45,6 @@ function App(): JSX.Element {
             setIsOnGame(false);
           }}
         />
-        <input
-          type={'checkbox'}
-          ref={checkRef}
-          key={'isCameraControl'}
-          id={'isCameraControl'}
-          onChange={() => setIsUseCamera((prev) => !prev)}
-        />
-        <label htmlFor={'isCameraControl'}>Use camera for control</label>
-        {isUseCamera ? <CameraControl /> : null}
       </div>
     );
   }
