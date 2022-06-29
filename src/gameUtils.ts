@@ -1,3 +1,5 @@
+import { Hand } from '@tensorflow-models/hand-pose-detection';
+
 export type Point = {
   x: number;
   y: number;
@@ -5,6 +7,35 @@ export type Point = {
 
 export const GRID_ROWS_SIZE = 21;
 export const GRID_COLUMNS_SIZE = 25;
+
+export const getDirectionByHandsPose = (hand: Hand): Point | undefined => {
+  const handelPoint1 = hand.keypoints[9];
+  const handelPoint2 = hand.keypoints[12];
+  const vector = { x: handelPoint1.x - handelPoint2.x, y: handelPoint1.y - handelPoint2.y };
+
+  const vectorModule = (vector.x ** 2 + vector.y ** 2) ** (1 / 2);
+
+  const cosVector = vector.x / vectorModule;
+  const sinVector = vector.y / vectorModule;
+
+  if (vectorModule < 50) return;
+
+  if (cosVector > Math.cos(Math.PI / 4)) {
+    return { x: 1, y: 0 };
+  }
+
+  if (cosVector < -Math.cos(Math.PI / 4)) {
+    return { x: -1, y: 0 };
+  }
+
+  if (sinVector > Math.sin(Math.PI / 4)) {
+    return { x: 0, y: -1 };
+  }
+
+  if (sinVector < -Math.sin(Math.PI / 4)) {
+    return { x: 0, y: 1 };
+  }
+};
 
 export const isDied = (snake: Point[], badFood: Point): boolean => {
   return isPointOnSnake(snake, snake[0], true) || (snake[0].x === badFood.x && snake[0].y === badFood.y);
