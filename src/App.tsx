@@ -23,7 +23,7 @@ function App(): JSX.Element {
     setIsPaused((prev) => !prev);
   };
 
-  const onCameraControl = (direction: Point) => {
+  const handleCameraDirection = (direction: Point) => {
     if (isPaused) return;
     setCameraDirection((prev) => {
       if (!prev) return direction;
@@ -63,7 +63,7 @@ function App(): JSX.Element {
           }}
           cameraDirection={cameraDirection}
         />
-        {isUseCamera ? <CameraControl onChangeDirection={onCameraControl} /> : undefined}
+        {isUseCamera ? <CameraControl onChangeDirection={handleCameraDirection} /> : undefined}
         <input
           type='checkbox'
           key='isCameraControl'

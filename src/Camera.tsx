@@ -30,8 +30,8 @@ export const CameraControl = ({ onChangeDirection, interval }: CameraControlProp
       setMediaStream(stream);
     };
 
-    if (!mediaStream) initCamera();
-  });
+    initCamera();
+  }, []);
 
   useEffect(() => {
     if (!videoRef.current || !mediaStream) return;
