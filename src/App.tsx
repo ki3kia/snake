@@ -1,18 +1,19 @@
 import './App.css';
 import './pokemon.css';
 import './game.css';
-import '@tensorflow/tfjs-core';
-import '@tensorflow/tfjs-backend-webgl';
-import '@mediapipe/hands';
 
 import { Pokemon, PokemonList } from './PokemonList';
-import { useState } from 'react';
-import { SnakeStates } from './Snake';
+import { useEffect, useState } from 'react';
+import { SnakeStates, INITIAL_DIRECTION } from './Snake';
+import { CameraControl } from './Camera';
+import { Point } from './gameUtils';
 
 function App(): JSX.Element {
   const [pokemon, setPokemon] = useState<Pokemon['id']>(1);
+  const [cameraDirection, setCameraDirection] = useState<Point>();
   const [isOnGame, setIsOnGame] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
+  const [isUseCamera, setIsUseCamera] = useState<boolean>();
 
   const nextClick = () => {
     setIsOnGame(true);
@@ -22,18 +23,34 @@ function App(): JSX.Element {
     setIsPaused((prev) => !prev);
   };
 
+  const onCameraControl = (direction: Point) => {
+    if (isPaused) return;
+    setCameraDirection((prev) => {
+      if (!prev) return direction;
+
+      return prev.x === direction.x || prev.y === direction.y ? prev : direction;
+    });
+  };
+
+  useEffect(() => {
+    if (isOnGame) return;
+    setIsUseCamera(false);
+    setCameraDirection(INITIAL_DIRECTION);
+    setIsPaused(true);
+  }, [isOnGame]);
+
   if (isOnGame) {
     return (
       <div className='App'>
         {isPaused ? (
-          <div className={'pause'}>
-            <button className={'play'} onClick={pauseHandler}>
+          <div className='pause'>
+            <button className='play' onClick={pauseHandler}>
               {'\u25B6'}
             </button>
           </div>
         ) : (
-          <div className={'play'}>
-            <button className={'pause'} onClick={pauseHandler}>
+          <div className='play'>
+            <button className='pause' onClick={pauseHandler}>
               {'\u2759 \u2759'}
             </button>
           </div>
@@ -44,19 +61,26 @@ function App(): JSX.Element {
           onEndGame={() => {
             setIsOnGame(false);
           }}
+          cameraDirection={cameraDirection}
         />
+        {isUseCamera ? <CameraControl onChangeDirection={onCameraControl} /> : undefined}
+        <input
+          type='checkbox'
+          key='isCameraControl'
+          id='isCameraControl'
+          onChange={() => setIsUseCamera((prev) => !prev)}
+        />
+        <label htmlFor='isCameraControl'>Use camera for control</label>
       </div>
     );
   }
 
   return (
     <div className='App'>
-      <div id={'pokemonChoose'}>
-        <PokemonList pokemonId={pokemon} onSelectPokemon={setPokemon} />
-        <button className='next' onClick={nextClick}>
-          {'Play \u25B6'}
-        </button>
-      </div>
+      <PokemonList pokemonId={pokemon} onSelectPokemon={setPokemon} />
+      <button className='next' onClick={nextClick}>
+        {'Play \u25B6'}
+      </button>
     </div>
   );
 }

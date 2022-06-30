@@ -1,12 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { Pokemon } from './PokemonList';
 import { Point, generatePointOutSnakeBody, moveSnake, isDied, isWin } from './gameUtils';
-import { CameraControl } from './Camera';
 
 type Props = {
   pokemonId: Pokemon['id'];
   isPaused: boolean;
   onEndGame: () => void;
+  cameraDirection: Point | undefined;
 };
 type Food = {
   good: Point;
@@ -24,13 +24,13 @@ const INITIAL_SNAKE_BODY = [
 ];
 
 const INITIAL_STEP_TIME_INTERVAL = 200;
-const INITIAL_DIRECTION: Point = { x: 1, y: 0 };
+export const INITIAL_DIRECTION: Point = { x: 1, y: 0 };
 const INITIAL_FOOD = {
   good: { x: 20, y: 9 },
   bad: { x: 20, y: 13 },
 };
 
-export const SnakeStates = ({ pokemonId, isPaused, onEndGame }: Props): JSX.Element => {
+export const SnakeStates = ({ pokemonId, isPaused, onEndGame, cameraDirection }: Props): JSX.Element => {
   const [gameState, setGameState] = useState<GameState>({
     snakeBody: INITIAL_SNAKE_BODY,
     food: INITIAL_FOOD,
@@ -45,6 +45,10 @@ export const SnakeStates = ({ pokemonId, isPaused, onEndGame }: Props): JSX.Elem
       gridColumnStart: element.x,
     };
   };
+
+  useEffect(() => {
+    if (!isPaused && cameraDirection) directionRef.current = cameraDirection;
+  }, [isPaused, cameraDirection]);
 
   useEffect(() => {
     if (isPaused) return;
@@ -96,37 +100,25 @@ export const SnakeStates = ({ pokemonId, isPaused, onEndGame }: Props): JSX.Elem
     }
   }, [gameState.snakeBody, gameState.food, onEndGame]);
 
-  const [isUseCamera, setIsUseCamera] = useState(false);
-
   return (
-    <>
-      <div className={'game-board'}>
-        {gameState.snakeBody.map((segment, key) => {
-          const styleSnake =
-            key === 0
-              ? {
-                  ...getElementPositionStyle(segment),
-                  backgroundImage: `url(https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${
-                    pokemonId ?? 1
-                  }.svg)`,
-                  backgroundColor: 'inherit',
-                }
-              : getElementPositionStyle(segment);
+    <div className='game-board'>
+      {gameState.snakeBody.map((segment, key) => {
+        const styleSnake =
+          key === 0
+            ? {
+                ...getElementPositionStyle(segment),
+                backgroundImage: `url(https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/dream-world/${
+                  pokemonId ?? 1
+                }.svg)`,
+                backgroundColor: 'inherit',
+              }
+            : getElementPositionStyle(segment);
 
-          return <div key={key} className={'snake-body'} style={styleSnake} />;
-        })}
+        return <div key={key} className='snake-body' style={styleSnake} />;
+      })}
 
-        <div key={'good_food'} className={'food good'} style={getElementPositionStyle(gameState.food.good)} />
-        <div key={'bad_food'} className={'food bad'} style={getElementPositionStyle(gameState.food.bad)} />
-      </div>
-      {isUseCamera ? <CameraControl /> : null}
-      <input
-        type={'checkbox'}
-        key={'isCameraControl'}
-        id={'isCameraControl'}
-        onChange={() => setIsUseCamera((prev) => !prev)}
-      />
-      <label htmlFor={'isCameraControl'}>Use camera for control</label>
-    </>
+      <div key='good_food' className='food good' style={getElementPositionStyle(gameState.food.good)} />
+      <div key='bad_food' className='food bad' style={getElementPositionStyle(gameState.food.bad)} />
+    </div>
   );
 };

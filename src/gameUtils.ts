@@ -7,6 +7,8 @@ export type Point = {
 
 export const GRID_ROWS_SIZE = 21;
 export const GRID_COLUMNS_SIZE = 25;
+const SIN_VERTICAL = Math.sin(Math.PI / 3);
+const COS_HORIZONTAL = Math.cos(Math.PI / 4);
 
 export const getDirectionByHandsPose = (hand: Hand): Point | undefined => {
   const handelPoint1 = hand.keypoints[9];
@@ -18,21 +20,21 @@ export const getDirectionByHandsPose = (hand: Hand): Point | undefined => {
   const cosVector = vector.x / vectorModule;
   const sinVector = vector.y / vectorModule;
 
-  if (vectorModule < 50) return;
+  if (vectorModule < 70) return undefined;
 
-  if (cosVector > Math.cos(Math.PI / 4)) {
+  if (cosVector > COS_HORIZONTAL) {
     return { x: 1, y: 0 };
   }
 
-  if (cosVector < -Math.cos(Math.PI / 4)) {
+  if (cosVector < -COS_HORIZONTAL) {
     return { x: -1, y: 0 };
   }
 
-  if (sinVector > Math.sin(Math.PI / 4)) {
+  if (sinVector > SIN_VERTICAL) {
     return { x: 0, y: -1 };
   }
 
-  if (sinVector < -Math.sin(Math.PI / 4)) {
+  if (sinVector < -SIN_VERTICAL) {
     return { x: 0, y: 1 };
   }
 };
