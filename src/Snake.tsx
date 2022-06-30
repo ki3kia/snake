@@ -6,7 +6,7 @@ type Props = {
   pokemonId: Pokemon['id'];
   isPaused: boolean;
   onEndGame: () => void;
-  cameraDirection: Point | undefined;
+  cameraDirection: Point;
 };
 type Food = {
   good: Point;
@@ -46,9 +46,7 @@ export const SnakeStates = ({ pokemonId, isPaused, onEndGame, cameraDirection }:
     };
   };
 
-  useEffect(() => {
-    if (!isPaused && cameraDirection) directionRef.current = cameraDirection;
-  }, [isPaused, cameraDirection]);
+  directionRef.current = cameraDirection;
 
   useEffect(() => {
     if (isPaused) return;

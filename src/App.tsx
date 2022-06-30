@@ -10,10 +10,10 @@ import { Point } from './gameUtils';
 
 function App(): JSX.Element {
   const [pokemon, setPokemon] = useState<Pokemon['id']>(1);
-  const [cameraDirection, setCameraDirection] = useState<Point>();
+  const [cameraDirection, setCameraDirection] = useState(INITIAL_DIRECTION);
   const [isOnGame, setIsOnGame] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
-  const [isUseCamera, setIsUseCamera] = useState<boolean>();
+  const [isUseCamera, setIsUseCamera] = useState(false);
 
   const nextClick = () => {
     setIsOnGame(true);
@@ -63,14 +63,18 @@ function App(): JSX.Element {
           }}
           cameraDirection={cameraDirection}
         />
-        {isUseCamera ? <CameraControl onChangeDirection={handleCameraDirection} /> : undefined}
-        <input
-          type='checkbox'
-          key='isCameraControl'
-          id='isCameraControl'
-          onChange={() => setIsUseCamera((prev) => !prev)}
-        />
-        <label htmlFor='isCameraControl'>Use camera for control</label>
+        <div className='videoBlock'>
+          <div>
+            <input
+              type='checkbox'
+              key='isCameraControl'
+              id='isCameraControl'
+              onChange={() => setIsUseCamera(!isUseCamera)}
+            />
+            <label htmlFor='isCameraControl'>Use camera for control</label>
+          </div>
+          {isUseCamera ? <CameraControl onChangeDirection={handleCameraDirection} /> : undefined}
+        </div>
       </div>
     );
   }
