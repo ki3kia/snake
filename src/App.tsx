@@ -5,12 +5,12 @@ import './game.css';
 import { Pokemon, PokemonList } from './PokemonList';
 import { useEffect, useState } from 'react';
 import { SnakeStates, INITIAL_DIRECTION } from './Snake';
-import { CameraControl } from './Camera';
 import { Point } from './gameUtils';
+import { CameraControl } from './Camera';
 
 function App(): JSX.Element {
   const [pokemon, setPokemon] = useState<Pokemon['id']>(1);
-  const [cameraDirection, setCameraDirection] = useState(INITIAL_DIRECTION);
+  const [cameraDirection, setCameraDirection] = useState<Point>();
   const [isOnGame, setIsOnGame] = useState(false);
   const [isPaused, setIsPaused] = useState(true);
   const [isUseCamera, setIsUseCamera] = useState(false);
@@ -58,10 +58,8 @@ function App(): JSX.Element {
         <SnakeStates
           pokemonId={pokemon}
           isPaused={isPaused}
-          onEndGame={() => {
-            setIsOnGame(false);
-          }}
-          cameraDirection={cameraDirection}
+          onEndGame={() => setIsOnGame(false)}
+          cameraDirection={isUseCamera ? cameraDirection : undefined}
         />
         <div className='videoBlock'>
           <div>

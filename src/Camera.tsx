@@ -6,56 +6,68 @@ import '@mediapipe/hands';
 import '@tensorflow-models/hand-pose-detection';
 import { getDirectionByHandsPose, Point } from './gameUtils';
 
-const model = handPoseDetection.SupportedModels.MediaPipeHands;
-const detectorConfig: handPoseDetection.MediaPipeHandsMediaPipeModelConfig = {
+type CameraControlProps = {
+  onChangeDirection: (direction: Point) => void;
+};
+
+const MODEL = handPoseDetection.SupportedModels.MediaPipeHands;
+const DETECTOR_CONFIG: handPoseDetection.MediaPipeHandsMediaPipeModelConfig = {
   runtime: 'mediapipe',
   solutionPath: 'https://cdn.jsdelivr.net/npm/@mediapipe/hands',
   modelType: 'full',
   maxHands: 1,
 };
 
-const detectorPromise = handPoseDetection.createDetector(model, detectorConfig);
+const detectorPromise = handPoseDetection.createDetector(MODEL, DETECTOR_CONFIG);
 
-type CameraControlProps = {
-  onChangeDirection?: (direction: Point) => void;
-  interval?: number;
-};
-export const CameraControl = ({ onChangeDirection, interval }: CameraControlProps): ReactElement => {
+export const CameraControl = ({ onChangeDirection }: CameraControlProps): ReactElement => {
   const [mediaStream, setMediaStream] = useState<MediaStream>();
+  const [detector, setDetector] = useState<handPoseDetection.HandDetector>();
   const videoRef = useRef<HTMLVideoElement>(null);
 
   useEffect(() => {
     const initCamera = async () => {
-      const stream = await navigator.mediaDevices.getUserMedia({ audio: false, video: true });
-      setMediaStream(stream);
+      setMediaStream(await navigator.mediaDevices.getUserMedia({ audio: false, video: true }));
+    };
+
+    const initDetector = async () => {
+      setDetector(await detectorPromise);
     };
 
     initCamera();
+    initDetector();
   }, []);
 
   useEffect(() => {
-    if (!videoRef.current || !mediaStream) return;
-    videoRef.current.srcObject = mediaStream;
-    return () => {
-      mediaStream.getTracks().forEach((track) => track.stop());
-    };
+    if (videoRef.current) videoRef.current.srcObject = mediaStream ?? null;
+
+    if (mediaStream) {
+      return () => {
+        mediaStream.getTracks().forEach((track) => track.stop());
+      };
+    }
   }, [mediaStream]);
 
+  const onChangeDirectionRef = useRef(onChangeDirection);
+  onChangeDirectionRef.current = onChangeDirection;
+
   useEffect(() => {
-    if (!mediaStream || !onChangeDirection || !videoRef.current) return;
+    if (!mediaStream || !detector) return;
 
     const intervalId = setInterval(async () => {
-      const detector = await detectorPromise;
       if (!videoRef.current) return;
-      const hands = await detector.estimateHands(videoRef.current, { staticImageMode: true });
+
+      const hands = await detector.estimateHands(videoRef.current, { staticImageMode: false });
       let direction: Point | undefined;
       if (hands[0]) direction = getDirectionByHandsPose(hands[0]);
 
-      if (direction) onChangeDirection(direction);
+      if (direction) onChangeDirectionRef.current(direction);
     }, 200);
 
-    return () => clearInterval(intervalId);
-  }, [onChangeDirection, interval, mediaStream]);
+    return () => {
+      clearInterval(intervalId);
+    };
+  }, [mediaStream, detector]);
 
   return <video ref={videoRef} autoPlay />;
 };
