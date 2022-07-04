@@ -10,6 +10,7 @@ type CameraControlProps = {
   onChangeDirection: (direction: Point) => void;
 };
 
+const DELAY = 200;
 const MODEL = handPoseDetection.SupportedModels.MediaPipeHands;
 const DETECTOR_CONFIG: handPoseDetection.MediaPipeHandsMediaPipeModelConfig = {
   runtime: 'mediapipe',
@@ -54,18 +55,19 @@ export const CameraControl = ({ onChangeDirection }: CameraControlProps): ReactE
   useEffect(() => {
     if (!mediaStream || !detector) return;
 
-    const intervalId = setInterval(async () => {
+    const getDirection = async () => {
       if (!videoRef.current) return;
-
       const hands = await detector.estimateHands(videoRef.current, { staticImageMode: false });
       let direction: Point | undefined;
       if (hands[0]) direction = getDirectionByHandsPose(hands[0]);
 
       if (direction) onChangeDirectionRef.current(direction);
-    }, 200);
+      if (hands) setTimeout(getDirection, DELAY);
+    };
+    const timeoutId = setTimeout(getDirection, DELAY);
 
     return () => {
-      clearInterval(intervalId);
+      clearTimeout(timeoutId);
     };
   }, [mediaStream, detector]);
 
