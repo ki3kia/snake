@@ -62,12 +62,17 @@ export const CameraControl = ({ onChangeDirection }: CameraControlProps): ReactE
       if (hands[0]) direction = getDirectionByHandsPose(hands[0]);
 
       if (direction) onChangeDirectionRef.current(direction);
-      if (hands) setTimeout(getDirection, DELAY);
+      const timeoutID = setTimeout(getDirection, DELAY);
+      return () => clearTimeout(timeoutID);
     };
-    const timeoutId = setTimeout(getDirection, DELAY);
+    let clearTimeoutFunction: (() => void) | undefined;
+    const timeoutId = setTimeout(async () => {
+      clearTimeoutFunction = await getDirection();
+    }, DELAY);
 
     return () => {
       clearTimeout(timeoutId);
+      if (clearTimeoutFunction) clearTimeoutFunction();
     };
   }, [mediaStream, detector]);
 
