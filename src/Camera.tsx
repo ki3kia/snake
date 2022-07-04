@@ -55,31 +55,28 @@ export const CameraControl = ({ onChangeDirection }: CameraControlProps): ReactE
   useEffect(() => {
     if (!mediaStream || !detector) return;
 
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
     const getDirection = async () => {
       if (!videoRef.current) return;
+
       const hands = await detector.estimateHands(videoRef.current, { staticImageMode: false });
-      let direction: Point | undefined;
-      if (hands[0]) direction = getDirectionByHandsPose(hands[0]);
+
+      const isTerminated = timeoutId === undefined;
+      if (isTerminated) return;
+
+      const direction: Point | undefined = hands[0] && getDirectionByHandsPose(hands[0]);
 
       if (direction) onChangeDirectionRef.current(direction);
-      let clear: (() => void) | undefined;
-      const timeoutID = setTimeout(async () => {
-        clear = await getDirection();
-      }, DELAY);
-      return () => {
-        if (clear) clear();
-        clearTimeout(timeoutID);
-      };
+
+      timeoutId = setTimeout(getDirection, DELAY);
     };
 
-    let clearTimeoutFunction: (() => void) | undefined;
-    const timeoutId = setTimeout(async () => {
-      clearTimeoutFunction = await getDirection();
-    }, DELAY);
+    timeoutId = setTimeout(getDirection, DELAY);
 
     return () => {
       clearTimeout(timeoutId);
-      if (clearTimeoutFunction) clearTimeoutFunction();
+      timeoutId = undefined;
     };
   }, [mediaStream, detector]);
 
