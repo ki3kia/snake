@@ -6,6 +6,7 @@ type Props = {
   pokemonId: Pokemon['id'];
   isPaused: boolean;
   onEndGame: () => void;
+  cameraDirection?: Point;
 };
 type Food = {
   good: Point;
@@ -23,13 +24,13 @@ const INITIAL_SNAKE_BODY = [
 ];
 
 const INITIAL_STEP_TIME_INTERVAL = 200;
-const INITIAL_DIRECTION: Point = { x: 1, y: 0 };
+export const INITIAL_DIRECTION: Point = { x: 1, y: 0 };
 const INITIAL_FOOD = {
   good: { x: 20, y: 9 },
   bad: { x: 20, y: 13 },
 };
 
-export const SnakeStates = ({ pokemonId, isPaused, onEndGame }: Props): JSX.Element => {
+export const SnakeStates = ({ pokemonId, isPaused, onEndGame, cameraDirection }: Props): JSX.Element => {
   const [gameState, setGameState] = useState<GameState>({
     snakeBody: INITIAL_SNAKE_BODY,
     food: INITIAL_FOOD,
@@ -44,6 +45,8 @@ export const SnakeStates = ({ pokemonId, isPaused, onEndGame }: Props): JSX.Elem
       gridColumnStart: element.x,
     };
   };
+
+  if (cameraDirection) directionRef.current = cameraDirection;
 
   useEffect(() => {
     if (isPaused) return;
@@ -96,7 +99,7 @@ export const SnakeStates = ({ pokemonId, isPaused, onEndGame }: Props): JSX.Elem
   }, [gameState.snakeBody, gameState.food, onEndGame]);
 
   return (
-    <div className={'game-board'}>
+    <div className='game-board'>
       {gameState.snakeBody.map((segment, key) => {
         const styleSnake =
           key === 0
@@ -109,11 +112,11 @@ export const SnakeStates = ({ pokemonId, isPaused, onEndGame }: Props): JSX.Elem
               }
             : getElementPositionStyle(segment);
 
-        return <div key={key} className={'snake-body'} style={styleSnake} />;
+        return <div key={key} className='snake-body' style={styleSnake} />;
       })}
 
-      <div key={'good_food'} className={'food good'} style={getElementPositionStyle(gameState.food.good)} />
-      <div key={'bad_food'} className={'food bad'} style={getElementPositionStyle(gameState.food.bad)} />
+      <div key='good_food' className='food good' style={getElementPositionStyle(gameState.food.good)} />
+      <div key='bad_food' className='food bad' style={getElementPositionStyle(gameState.food.bad)} />
     </div>
   );
 };
