@@ -8,6 +8,7 @@
   overflow-y: scroll;
   justify-content: space-around;
   border-radius: 5px;
+  justify-self: center;
 }
 
 .pokemonList::-webkit-scrollbar {
